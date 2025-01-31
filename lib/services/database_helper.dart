@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:io';
+import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import '../models/book.dart';
@@ -24,9 +27,9 @@ class DatabaseHelper {
 
     return await openDatabase(
       path,
-      version: 2, // Увеличьте версию
+      version: 2,
       onCreate: _onCreate,
-      onUpgrade: _onUpgrade, // Добавьте метод для обновления
+      onUpgrade: _onUpgrade,
     );
   }
 
@@ -67,4 +70,22 @@ class DatabaseHelper {
     final db = await database;
     await db.delete('books', where: 'id = ?', whereArgs: [id]);
   }
+
+  Future<void> exportBooks(String filePath) async {
+    final books = await getBooks();
+    final jsonData = json.encode(books.map((book) => book.toMap()).toList());
+    final file = File(filePath);
+    await file.writeAsString(jsonData);
+  }
+
+  Future<void> importBooks(String filePath) async {
+    final file = File(filePath);
+    final jsonData = await file.readAsString();
+    final List<dynamic> data = json.decode(jsonData);
+    for (var item in data) {
+      final book = Book.fromMap(item);
+      await insertBook(book);
+    }
+  }
 }
+
