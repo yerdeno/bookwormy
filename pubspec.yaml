@@ -12,9 +12,9 @@ dependencies:
   sqflite: ^2.0.0+4
   sqflite_common_ffi: ^2.0.0+4
   path: ^1.8.0
-  http: any
-  path_provider: any
-  file_picker: any
+  http: latest
+  path_provider: latest
+  file_picker: latest
 
 dev_dependencies:
   flutter_test:
