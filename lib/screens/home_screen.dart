@@ -13,6 +13,49 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  int _selectedIndex = 0; // Индекс текущей вкладки
+
+  // Вкладки
+  final List<Widget> _tabs = [
+    LibraryTab(), // Вкладка "Библиотека"
+    ProfileTab(), // Вкладка "Профиль"
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: _tabs[_selectedIndex], // Отображаем текущую вкладку
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.library_books),
+            label: 'Библиотека',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Профиль',
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// Вкладка "Библиотека"
+class LibraryTab extends StatefulWidget {
+  @override
+  _LibraryTabState createState() => _LibraryTabState();
+}
+
+class _LibraryTabState extends State<LibraryTab> {
   late Future<List<Book>> _booksFuture;
   String _searchQuery = '';
 
@@ -36,48 +79,11 @@ class _HomeScreenState extends State<HomeScreen> {
     }).toList();
   }
 
-  Future<void> _exportBooks() async {
-    try {
-      final directory = await getApplicationDocumentsDirectory();
-      final filePath = '${directory.path}/books.json';
-      await DatabaseHelper().exportBooks(filePath);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Книги экспортированы в $filePath')),
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Ошибка при экспорте: $e')),
-      );
-    }
-  }
-
-  Future<void> _importBooks() async {
-    try {
-      final result = await FilePicker.platform.pickFiles(
-        type: FileType.custom,
-        allowedExtensions: ['json'],
-      );
-
-      if (result != null) {
-        final filePath = result.files.single.path!;
-        await DatabaseHelper().importBooks(filePath);
-        _refreshBooks();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Книги импортированы из $filePath')),
-        );
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Ошибка при импорте: $e')),
-      );
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Трекер книг'),
+        title: Text('Библиотека'),
         actions: [
           IconButton(
             icon: Icon(Icons.search),
@@ -85,36 +91,6 @@ class _HomeScreenState extends State<HomeScreen> {
               showSearch(
                 context: context,
                 delegate: BookSearchDelegate(_refreshBooks),
-              );
-            },
-          ),
-          IconButton(
-            icon: Icon(Icons.import_export),
-            onPressed: () async {
-              await showDialog(
-                context: context,
-                builder: (context) {
-                  return AlertDialog(
-                    title: Text('Экспорт/Импорт'),
-                    content: Text('Выберите действие:'),
-                    actions: [
-                      TextButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                          _exportBooks();
-                        },
-                        child: Text('Экспорт'),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                          _importBooks();
-                        },
-                        child: Text('Импорт'),
-                      ),
-                    ],
-                  );
-                },
               );
             },
           ),
@@ -163,6 +139,71 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
+// Вкладка "Профиль"
+class ProfileTab extends StatelessWidget {
+  Future<void> _exportBooks(BuildContext context) async {
+    try {
+      final directory = await getApplicationDocumentsDirectory();
+      final filePath = '${directory.path}/books.json';
+      await DatabaseHelper().exportBooks(filePath);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Книги экспортированы в $filePath')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Ошибка при экспорте: $e')),
+      );
+    }
+  }
+
+  Future<void> _importBooks(BuildContext context) async {
+    try {
+      final result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['json'],
+      );
+
+      if (result != null) {
+        final filePath = result.files.single.path!;
+        await DatabaseHelper().importBooks(filePath);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Книги импортированы из $filePath')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Ошибка при импорте: $e')),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Профиль'),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              onPressed: () => _exportBooks(context), // Передаём контекст
+              child: Text('Экспорт книг'),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () => _importBooks(context), // Передаём контекст
+              child: Text('Импорт книг'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// Делегат для поиска
 class BookSearchDelegate extends SearchDelegate<String> {
   final Function refreshBooks;
 
