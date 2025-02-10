@@ -4,7 +4,7 @@ import '../models/book.dart';
 class BookDetailScreen extends StatelessWidget {
   final Book book;
 
-  BookDetailScreen({required this.book});
+  const BookDetailScreen({super.key, required this.book});
 
   @override
   Widget build(BuildContext context) {

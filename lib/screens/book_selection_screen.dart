@@ -5,7 +5,7 @@ import '../services/google_books_api.dart';
 class BookSelectionScreen extends StatefulWidget {
   final String searchQuery;
 
-  BookSelectionScreen({required this.searchQuery});
+  const BookSelectionScreen({super.key, required this.searchQuery});
 
   @override
   _BookSelectionScreenState createState() => _BookSelectionScreenState();

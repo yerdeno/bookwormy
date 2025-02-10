@@ -4,6 +4,8 @@ import '../services/database_helper.dart';
 import 'book_selection_screen.dart';
 
 class AddBookScreen extends StatefulWidget {
+  const AddBookScreen({super.key});
+
   @override
   _AddBookScreenState createState() => _AddBookScreenState();
 }

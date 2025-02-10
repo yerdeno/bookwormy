@@ -8,6 +8,8 @@ import 'add_book_screen.dart';
 import 'book_detail_screen.dart';
 
 class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
@@ -51,13 +53,15 @@ class _HomeScreenState extends State<HomeScreen> {
 
 // Вкладка "Библиотека"
 class LibraryTab extends StatefulWidget {
+  const LibraryTab({super.key});
+
   @override
   _LibraryTabState createState() => _LibraryTabState();
 }
 
 class _LibraryTabState extends State<LibraryTab> {
   late Future<List<Book>> _booksFuture;
-  String _searchQuery = '';
+  final String _searchQuery = '';
 
   @override
   void initState() {
@@ -141,6 +145,8 @@ class _LibraryTabState extends State<LibraryTab> {
 
 // Вкладка "Профиль"
 class ProfileTab extends StatelessWidget {
+  const ProfileTab({super.key});
+
   Future<void> _exportBooks(BuildContext context) async {
     try {
       final directory = await getApplicationDocumentsDirectory();

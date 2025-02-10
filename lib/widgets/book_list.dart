@@ -6,7 +6,7 @@ class BookList extends StatelessWidget {
   final Function(int) onDelete;
   final Function(Book) onTap;
 
-  BookList({
+  const BookList({super.key, 
     required this.books,
     required this.onDelete,
     required this.onTap,

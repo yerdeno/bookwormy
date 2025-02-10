@@ -11,6 +11,8 @@ void main() {
 }
 
 class BookTrackerApp extends StatelessWidget {
+  const BookTrackerApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
